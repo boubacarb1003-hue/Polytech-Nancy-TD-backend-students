@@ -72,7 +72,7 @@ components:
                     example: 1
                 title:
                     type: string
-                    nullable: true
+                    nullable: false
                     example: Acheter du lait
                 description:
                     type: string
@@ -80,7 +80,7 @@ components:
                     example: 2L demi-écrémé
                 done:
                     type: boolean
-                    nullable: true
+                    nullable: false
                     example: false
             required:
                 - id
