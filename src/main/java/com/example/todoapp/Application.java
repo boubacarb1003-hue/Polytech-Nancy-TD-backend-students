@@ -64,7 +64,7 @@ public class Application {
         }
         //endregion
 
-        // Sinon → 404
+        // Otherwise → 404
         sendResponse(exchange, 404, null);
     }
 
