@@ -4,19 +4,45 @@ info:
     version: 1.0.0
     description: >
         API de gestion d'une TODO List.
+
 servers:
-    -   url: http://localhost:8080
-        description: Serveur local de développement
+    - url: http://localhost:8080
+      description: Serveur local de développement
 
 tags:
-    -   name: tasks
-        description: Opérations sur les tâches
+    - name: tasks
+      description: Opérations sur les tâches
 
 paths:
     /tasks:
+        get:
+            tags: [tasks]
+            summary: Récupérer toutes les tâches
+            description: Retourne la liste des tâches. Le paramètre todo-only permet de récupérer seulement les tâches non terminées.
+            operationId: getTasks
+            parameters:
+                - in: query
+                  name: todo-only
+                  required: false
+                  description: Si true, retourne seulement les tâches à faire.
+                  schema:
+                      type: boolean
+            responses:
+                '200':
+                    description: Liste des tâches récupérée avec succès
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Task'
+                '204':
+                    description: Aucune tâche trouvée
+
         post:
-            tags: [ tasks ]
+            tags: [tasks]
             summary: Créer une tâche
+            description: Crée une nouvelle tâche à partir d'un JSON.
             operationId: createTask
             requestBody:
                 required: true
@@ -37,44 +63,21 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Task'
-/tasks:
-    get:
-        tags: [tasks]
-        summary: Récupérer toutes les tâches
-        description: Retourne la liste des tâches. le paramètre todo-only permet de récupérer seulement les tâches non terminées.
-        operationId: getTasks
-        parameters:
-            - in: query
-              name: todo-only
-              required: false
-              description: si true, retourne seulement les tâches à faire.
-              schema:
-                  type: boolean
-        responses:
-            '200':
-                description: Liste des tâches récupérée avec succès
-                content:
-                    application/json:
-                        schema:
-                            type: array
-                            items:
-                                $ref: '#/components/schemas/Task'
-            '204':
-                description: Aucune tâche trouvée
 
     /tasks/{id}:
         parameters:
-            -   in: path
-                name: id
-                required: true
-                description: Identifiant numérique de la tâche
-                schema:
-                    type: integer
-                    minimum: 1
+            - in: path
+              name: id
+              required: true
+              description: Identifiant numérique de la tâche
+              schema:
+                  type: integer
+                  minimum: 1
+
         get:
-            tags: [ tasks ]
+            tags: [tasks]
             summary: Récupérer une tâche
-            description: Récupérer une tâche par son identifiant
+            description: Récupère une tâche par son identifiant.
             operationId: getTaskById
             responses:
                 '200':
@@ -85,32 +88,35 @@ paths:
                                 $ref: '#/components/schemas/Task'
                 '404':
                     description: Tâche non trouvée
+
         put:
-            tags: [ tasks ]
+            tags: [tasks]
             summary: Modifier une tâche
             description: Modifie une tâche existante à partir d'un JSON.
             operationId: updateTaskById
             requestBody:
-            required: true
-            content:
-                application/json:
-                    schema:
-                        $ref: '#/components/schemas/Task'
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Task'
             responses:
                 '204':
                     description: Tâche modifiée avec succès
                 '404':
                     description: Tâche non trouvée
+
         delete:
-            tags: [ tasks ]
+            tags: [tasks]
             summary: Supprimer une tâche
             description: Supprime une tâche par son identifiant.
             operationId: deleteTaskById
             responses:
-                    '204':
-                        description: Tâche supprimée avec succès
-                    '404':
-                        description: Tâche non trouvée
+                '204':
+                    description: Tâche supprimée avec succès
+                '404':
+                    description: Tâche non trouvée
+
 components:
     schemas:
         Task:
@@ -122,7 +128,7 @@ components:
                     example: 1
                 title:
                     type: string
-                    nullable: true
+                    nullable: false
                     example: Acheter du lait
                 description:
                     type: string
@@ -130,8 +136,9 @@ components:
                     example: 2L demi-écrémé
                 done:
                     type: boolean
-                    nullable: true
+                    nullable: false
                     example: false
             required:
                 - id
                 - title
+                - done
