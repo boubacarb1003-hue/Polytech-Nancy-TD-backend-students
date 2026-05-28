@@ -47,7 +47,6 @@ paths:
                 schema:
                     type: integer
                     minimum: 1
-        /tasks:
         get:
             tags: [ tasks ]
             summary: Récupérer une tâche
@@ -62,41 +61,6 @@ paths:
                                 $ref: '#/components/schemas/Task'
                 '404':
                     description: Tâche non trouvée
-
-
-        Delete:
-            tags: [tasks]
-            summary: Supprimer une tâche
-            description: Recuperer une tâche par son identifiant
-            OperationID: deleteTasksbyId
-            responses:
-                '204':
-                    description: Tâche supprimer avec succès
-
-                '404':
-                    description: Fichier non trouver
-
-        put:
-            tags: [tasks]
-            summary: Modifier un fichier
-            description: Modifier un fichier à partir d'un json
-            operationID: putTasksbyId
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Task'
-            responses:
-                '204':
-                    description: not content
-
-                '404':
-                    description: not found
-
-
-
-
 components:
     schemas:
         Task:
@@ -108,7 +72,7 @@ components:
                     example: 1
                 title:
                     type: string
-                    nullable: false
+                    nullable: true
                     example: Acheter du lait
                 description:
                     type: string
@@ -116,7 +80,7 @@ components:
                     example: 2L demi-écrémé
                 done:
                     type: boolean
-                    nullable: false
+                    nullable: true
                     example: false
             required:
                 - id
