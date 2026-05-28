@@ -37,6 +37,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Task'
+/tasks:
+    get:
+        tags: [tasks]
+        summary: Récupérer toutes les tâches
+        description: Retourne la liste des tâches. le paramètre todo-only permet de récupérer seulement les tâches non terminées.
+        operationId: getTasks
+        parameters:
+            - in: query
+              name: todo-only
+              required: false
+              description: si true, retourne seulement les tâches à faire.
+              schema:
+                  type: boolean
+        responses:
+            '200':
+                description: Liste des tâches récupérée avec succès
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/Task'
+            '204':
+                description: Aucune tâche trouvée
 
     /tasks/{id}:
         parameters:
