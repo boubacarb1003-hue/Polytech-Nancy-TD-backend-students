@@ -3,6 +3,7 @@ package com.example.todoapp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Collection;
 
 /**
  * Data Access Object for {@link Task} model.
@@ -35,4 +36,28 @@ public class TaskDao {
     public Optional<Task> findById(int id) {
         return Optional.ofNullable(storage.get(id));
     }
+
+
+public Collection<Task> findAll() {
+    return storage.values();
 }
+
+public boolean deleteById(int id) {
+    return storage.remove(id) != null;
+}
+
+public boolean update(int id, Task task) {
+    if (!storage.containsKey(id)) {
+        return false;
+    }
+
+    Task updatedTask = new Task(
+            id,
+            task.title(),
+            task.description(),
+            task.done()
+    );
+
+    storage.put(id, updatedTask);
+    return true;
+}}

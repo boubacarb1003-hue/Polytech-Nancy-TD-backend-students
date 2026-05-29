@@ -64,8 +64,57 @@ public class Application {
         }
         //endregion
 
+
+        //region Manage GET/taks
+        m = ID_PATH.matcher(path);
+        if ("GET".equals(method)&& "/tasks".equals(path)) {
+            var tasks = dao.findAll();
+
+            if (tasks.isEmpty()) {
+                sendResponse(exchange,204,null);
+
+            }else{
+                sendResponse(exchange,200,JsonUtils.serialize(tasks));
+
+            }
+            return;
+        }
+        //endregion
+
+        //region Manage Put/tasks/{id}
+        m = ID_PATH.matcher(path);
+        if ("PUT".equals(method)&& m.matches()){
+            int id =Integer.parseInt(m.group(1));
+
+            Task input = JsonUtils.deserialize(new String(exchange.getRequestBody().readAllBytes(), UTF_8), Task.class);
+             boolean updated = dao.update(id, input);
+
+             if (updated){
+                 sendResponse(exchange,204,null);
+
+             }else {
+                 sendResponse(exchange, 404,null);
+             }
+            return;
+        }
+        // Region Mange DELETE /tasks/{id}
+        m = ID_PATH.matcher(path);
+        if ("DELETE".equals(method)&& m.matches()){
+            int id = Integer.parseInt(m.group(1));
+
+            boolean deleted = dao.deleteById(id);
+            if (deleted){
+                sendResponse(exchange,204,null);
+
+            }else {
+                sendResponse(exchange,404,null);
+            }
+            return;
+        }
+        //endregion
         // Sinon → 404
         sendResponse(exchange, 404, null);
+
     }
 
     private static void sendResponse(HttpExchange exchange, int status, String json) throws IOException {
@@ -81,4 +130,5 @@ public class Application {
             exchange.close();
         }
     }
+
 }
