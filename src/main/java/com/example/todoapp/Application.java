@@ -1,5 +1,10 @@
 package com.example.todoapp;
 
+import com.example.todoapp.service.TaskService;
+import com.example.todoapp.model.Task;
+import com.example.todoapp.utils.JsonUtils;
+
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.slf4j.Logger;
@@ -11,7 +16,9 @@ import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import com.example.todoapp.dto.CreatTaskDto;
+import com.example.todoapp.dto.TaskDto;
+import com.example.todoapp.dto.UpdateTaskDto;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
 
@@ -22,7 +29,7 @@ public class Application {
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);
     private static final Pattern ID_PATH = Pattern.compile("^/tasks/([0-9]+)$");
-    private static final TaskDao dao = new TaskDao();
+    private static final TaskService service = new TaskService();
 
     public static void main(String[] args) throws Exception {
         log.info("In-memory repository initialised");
@@ -40,8 +47,14 @@ public class Application {
 
         //region Manage POST /tasks
         if ("POST".equals(method) && "/tasks".equals(path)) {
-            Task input = JsonUtils.deserialize(new String(exchange.getRequestBody().readAllBytes(), UTF_8), Task.class);
-            Task createdTask = dao.save(input);
+            CreatTaskDto input = JsonUtils.deserialize(
+                    new String(exchange.getRequestBody().readAllBytes(), UTF_8),
+                    CreatTaskDto.class
+            );
+
+          
+
+            TaskDto createdTask = service.save(input);
 
             exchange.getResponseHeaders().add("Location", "/tasks/" + createdTask.id());
             sendResponse(exchange, 201, JsonUtils.serialize(createdTask));
@@ -53,7 +66,7 @@ public class Application {
         Matcher m = ID_PATH.matcher(path);
         if ("GET".equals(method) && m.matches()) {
             int id = Integer.parseInt(m.group(1));
-            Optional<Task> task = dao.findById(id);
+            Optional<TaskDto> task = service.findById(id);
 
             if (task.isPresent()) {
                 sendResponse(exchange, 200, JsonUtils.serialize(task.get()));
@@ -68,7 +81,7 @@ public class Application {
         //region Manage GET/taks
         m = ID_PATH.matcher(path);
         if ("GET".equals(method)&& "/tasks".equals(path)) {
-            var tasks = dao.findAll();
+            var tasks = service.findAll();
 
             if (tasks.isEmpty()) {
                 sendResponse(exchange,204,null);
@@ -86,8 +99,13 @@ public class Application {
         if ("PUT".equals(method)&& m.matches()){
             int id =Integer.parseInt(m.group(1));
 
-            Task input = JsonUtils.deserialize(new String(exchange.getRequestBody().readAllBytes(), UTF_8), Task.class);
-             boolean updated = dao.update(id, input);
+            UpdateTaskDto input = JsonUtils.deserialize(
+                    new String(exchange.getRequestBody().readAllBytes(), UTF_8),
+                    UpdateTaskDto.class
+            );
+
+            boolean updated = service.update(id, input);
+
 
              if (updated){
                  sendResponse(exchange,204,null);
@@ -102,7 +120,7 @@ public class Application {
         if ("DELETE".equals(method)&& m.matches()){
             int id = Integer.parseInt(m.group(1));
 
-            boolean deleted = dao.deleteById(id);
+            boolean deleted = service.deleteById(id);
             if (deleted){
                 sendResponse(exchange,204,null);
 
